@@ -1,8 +1,6 @@
-using System;
-using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
+[RequireComponent(typeof(CharacterController))]
 public class CharacterMovement : MonoBehaviour
 {
     private CharacterController controller;
@@ -17,8 +15,6 @@ public class CharacterMovement : MonoBehaviour
     private float targetAngle;
     private Vector3 moveVec;
     private bool canJump = false;
-    private bool isGrounded;
-    private Vector3 Velocity;
     void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -40,8 +36,6 @@ public class CharacterMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Velocity = controller.velocity;
-        isGrounded = controller.isGrounded;
         moveDirection  = playerInput.moveInput.x * Vector3.right + playerInput.moveInput.y * Vector3.forward;
         if (moveDirection.magnitude != 0) {
             targetAngle = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg + mainCamera.eulerAngles.y;
