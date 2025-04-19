@@ -14,7 +14,6 @@ namespace StarterAssets_InputSystem
 #endif
     public class ThirdPersonController : MonoBehaviour
     {
-        private Player player;
         [Header("Player")]
         [Tooltip("Move speed of the character in m/s")]
         public float MoveSpeed = 2.0f;
@@ -153,7 +152,6 @@ namespace StarterAssets_InputSystem
             _input = GetComponent<StarterAssetsInputs>();
 #if ENABLE_INPUT_SYSTEM 
             _playerInput = GetComponent<PlayerInput>();
-            player = GetComponent<Player>();
 #else
 			Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
 #endif
@@ -185,7 +183,7 @@ namespace StarterAssets_InputSystem
                 {
                     if (hit.collider.TryGetComponent(out IInteractable interactable))
                     {
-                        interactable.Interact(player);
+                        interactable.Interact();
                     }
                 }
                 else

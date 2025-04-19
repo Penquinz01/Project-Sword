@@ -9,7 +9,6 @@ namespace StarterAssets_InputSystem
 	public class StarterAssetsInputs : MonoBehaviour
 	{
 		private StarterAssets_Input _playerInput;
-		private PlayerInput _player;
         [Header("Character Input Values")]
 		public Vector2 move;
 		public Vector2 look;
@@ -26,23 +25,37 @@ namespace StarterAssets_InputSystem
 		public InputActionMap map;
 
 		[HideInInspector]
-		public bool unMounted = false;	
+		public bool unMounted = false;
+		private InputActionMap _playerMap;
+		private InputActionMap _horseMap;
+
+		public String currentAction;
 
 #if ENABLE_INPUT_SYSTEM
 		public void SwitchActionMap(String s)
 		{
-			if (s.Equals(_player.currentActionMap.name, StringComparison.OrdinalIgnoreCase))
+			if (s.Equals("Horse", StringComparison.OrdinalIgnoreCase))
 			{
-				return;
+				_playerMap.Disable();
+				_horseMap.Enable();
+				currentAction = _horseMap.name;
+            }
+			else if (s.Equals("Player", StringComparison.OrdinalIgnoreCase))
+			{
+				_horseMap.Disable();
+				_playerMap.Enable();
+                currentAction = _playerMap.name;
+            }
+			else
+			{
+				Debug.LogError("Invalid action map name");
 			}
-			_player.SwitchCurrentActionMap(s);
-        }
+		}
         private void Awake()
         {
-			_player = GetComponent<PlayerInput>();
             _playerInput = new StarterAssets_Input();
-            _playerInput.Player.Enable();
-			_playerInput.Horse.Enable();
+            _playerInput.Enable();
+			_playerInput.Player.Enable();
             _playerInput.Player.Move.performed += ctx => MoveInput(ctx.ReadValue<Vector2>());
             _playerInput.Player.Move.canceled += ctx => MoveInput(Vector2.zero);
             _playerInput.Player.Look.performed += ctx => LookInput(ctx.ReadValue<Vector2>());
@@ -57,6 +70,9 @@ namespace StarterAssets_InputSystem
 			_playerInput.Horse.Jump.started += ctx => JumpInput(ctx.ReadValueAsButton());
 			_playerInput.Horse.Sprint.started += ctx => SprintInput(ctx.ReadValueAsButton());
 			_playerInput.Horse.Unmount.started += ctx => unMounted = true;
+			_playerMap = _playerInput.Player;
+            _horseMap = _playerInput.Horse;
+			currentAction = _playerMap.name;
         }
         public void OnMove(InputValue value)
 		{
