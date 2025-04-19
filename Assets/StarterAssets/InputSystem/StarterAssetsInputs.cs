@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
@@ -44,10 +45,17 @@ namespace StarterAssets
 		{
 			SprintInput(value.isPressed);
 		}
+		public void OnInteraction(InputValue value)
+        {
+			Debug.Log("E pressed");
+            InteractionInput(value.isPressed);
+        }
+
+        
 #endif
 
 
-		public void MoveInput(Vector2 newMoveDirection)
+        public void MoveInput(Vector2 newMoveDirection)
 		{
 			move = newMoveDirection;
 		} 
@@ -76,6 +84,10 @@ namespace StarterAssets
 		{
 			Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
 		}
-	}
+        private void InteractionInput(bool isPressed)
+        {
+            interaction = isPressed;
+        }
+    }
 	
 }

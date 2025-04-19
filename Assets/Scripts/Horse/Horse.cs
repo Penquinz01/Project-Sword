@@ -1,8 +1,14 @@
 using UnityEngine;
 
-public class Horse : MonoBehaviour
+public class Horse : MonoBehaviour,IInteractable
 {
     private bool mounted;
+
+    public void Interact()
+    {
+        Debug.Log("Mounting");
+    }
+
     void Start()
     {
         

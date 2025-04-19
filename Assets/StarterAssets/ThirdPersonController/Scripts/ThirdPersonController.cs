@@ -27,14 +27,21 @@ namespace StarterAssets
 
         [Tooltip("Acceleration and deceleration")]
         public float SpeedChangeRate = 10.0f;
-        [Space(10)]
-        [Header("Interaction")]
-        [Tooltip("Define the Raycast Distance")]
-        [Range(0.1f,3)]
-        private float _rayDistance = 1.5f;
+      
+
         public AudioClip LandingAudioClip;
         public AudioClip[] FootstepAudioClips;
         [Range(0, 1)] public float FootstepAudioVolume = 0.5f;
+
+        [Space(10)]
+        [Header("Interaction")]
+        [Tooltip("Define the origin for raycast")]
+        [SerializeField]private Transform _rayOrigin;
+        [Tooltip("Define the Raycast Distance")]
+        [Range(0.1f, 3)]
+        [SerializeField] private float _rayDistance = 1.5f;
+        [Tooltip("Layer of interactable objects")]
+        [SerializeField] private LayerMask Interactable;
 
         [Space(10)]
         [Tooltip("The height the player can jump")]
@@ -168,7 +175,23 @@ namespace StarterAssets
 
         private void InteractionCheck()
         {
-            
+            if (_input.interaction)
+            {
+                _input.interaction = false;
+                RaycastHit hit;
+                if (Physics.Raycast(_rayOrigin.position, transform.forward, out hit, _rayDistance, Interactable))
+                {
+                    if (hit.collider.TryGetComponent(out IInteractable interactable))
+                    {
+                        interactable.Interact();
+                    }
+                }
+                else
+                {
+                    Debug.Log("No interactable object in range");
+
+                }
+            }    
         }
 
         private void LateUpdate()
@@ -397,6 +420,13 @@ namespace StarterAssets
             {
                 AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
             }
+        }
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawRay(_rayOrigin.position, transform.TransformDirection(Vector3.forward) * _rayDistance);
+            Gizmos.color = Color.white;
+            Gizmos.DrawWireSphere(_rayOrigin.position + transform.TransformDirection(Vector3.forward) * _rayDistance, 0.1f);
         }
     }
 }
