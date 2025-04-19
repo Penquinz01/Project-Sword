@@ -27,7 +27,11 @@ namespace StarterAssets
 
         [Tooltip("Acceleration and deceleration")]
         public float SpeedChangeRate = 10.0f;
-
+        [Space(10)]
+        [Header("Interaction")]
+        [Tooltip("Define the Raycast Distance")]
+        [Range(0.1f,3)]
+        private float _rayDistance = 1.5f;
         public AudioClip LandingAudioClip;
         public AudioClip[] FootstepAudioClips;
         [Range(0, 1)] public float FootstepAudioVolume = 0.5f;
@@ -159,6 +163,12 @@ namespace StarterAssets
             JumpAndGravity();
             GroundedCheck();
             Move();
+            InteractionCheck();
+        }
+
+        private void InteractionCheck()
+        {
+            
         }
 
         private void LateUpdate()

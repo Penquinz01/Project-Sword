@@ -154,6 +154,118 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Horse"",
+            ""id"": ""33a439a5-8ee0-448f-8a21-17cac562c03f"",
+            ""actions"": [
+                {
+                    ""name"": ""Move"",
+                    ""type"": ""Value"",
+                    ""id"": ""322e5f3a-f3f4-4541-b08f-65918500879f"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Sprint"",
+                    ""type"": ""Button"",
+                    ""id"": ""d38ba661-be24-4f30-8eae-77739fb3da51"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Jump"",
+                    ""type"": ""Button"",
+                    ""id"": ""5377de4e-0e85-48e3-a739-479e4db60f2c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""c2e58a5e-9556-4729-98ea-313b4963366d"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""71dfbc03-ee74-4c9a-8ef4-cebfe3f4ce79"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""a6f764c8-374f-4b8d-afd7-4f62fd3d5cb1"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""be664307-a0a7-4c09-a343-8c8f82a163de"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""fca251d8-4472-42db-aa94-59dc09d55e4a"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ebebf1e7-21f4-44f5-8513-97d48ad8bd48"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Sprint"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""90854107-252a-4efc-a033-0668f6479057"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -164,11 +276,17 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_Ground_Jump = m_Ground.FindAction("Jump", throwIfNotFound: true);
         m_Ground_Sprint = m_Ground.FindAction("Sprint", throwIfNotFound: true);
         m_Ground_Interract = m_Ground.FindAction("Interract", throwIfNotFound: true);
+        // Horse
+        m_Horse = asset.FindActionMap("Horse", throwIfNotFound: true);
+        m_Horse_Move = m_Horse.FindAction("Move", throwIfNotFound: true);
+        m_Horse_Sprint = m_Horse.FindAction("Sprint", throwIfNotFound: true);
+        m_Horse_Jump = m_Horse.FindAction("Jump", throwIfNotFound: true);
     }
 
     ~@Controls()
     {
         UnityEngine.Debug.Assert(!m_Ground.enabled, "This will cause a leak and performance issues, Controls.Ground.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Horse.enabled, "This will cause a leak and performance issues, Controls.Horse.Disable() has not been called.");
     }
 
     public void Dispose()
@@ -296,11 +414,79 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         }
     }
     public GroundActions @Ground => new GroundActions(this);
+
+    // Horse
+    private readonly InputActionMap m_Horse;
+    private List<IHorseActions> m_HorseActionsCallbackInterfaces = new List<IHorseActions>();
+    private readonly InputAction m_Horse_Move;
+    private readonly InputAction m_Horse_Sprint;
+    private readonly InputAction m_Horse_Jump;
+    public struct HorseActions
+    {
+        private @Controls m_Wrapper;
+        public HorseActions(@Controls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Move => m_Wrapper.m_Horse_Move;
+        public InputAction @Sprint => m_Wrapper.m_Horse_Sprint;
+        public InputAction @Jump => m_Wrapper.m_Horse_Jump;
+        public InputActionMap Get() { return m_Wrapper.m_Horse; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(HorseActions set) { return set.Get(); }
+        public void AddCallbacks(IHorseActions instance)
+        {
+            if (instance == null || m_Wrapper.m_HorseActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_HorseActionsCallbackInterfaces.Add(instance);
+            @Move.started += instance.OnMove;
+            @Move.performed += instance.OnMove;
+            @Move.canceled += instance.OnMove;
+            @Sprint.started += instance.OnSprint;
+            @Sprint.performed += instance.OnSprint;
+            @Sprint.canceled += instance.OnSprint;
+            @Jump.started += instance.OnJump;
+            @Jump.performed += instance.OnJump;
+            @Jump.canceled += instance.OnJump;
+        }
+
+        private void UnregisterCallbacks(IHorseActions instance)
+        {
+            @Move.started -= instance.OnMove;
+            @Move.performed -= instance.OnMove;
+            @Move.canceled -= instance.OnMove;
+            @Sprint.started -= instance.OnSprint;
+            @Sprint.performed -= instance.OnSprint;
+            @Sprint.canceled -= instance.OnSprint;
+            @Jump.started -= instance.OnJump;
+            @Jump.performed -= instance.OnJump;
+            @Jump.canceled -= instance.OnJump;
+        }
+
+        public void RemoveCallbacks(IHorseActions instance)
+        {
+            if (m_Wrapper.m_HorseActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IHorseActions instance)
+        {
+            foreach (var item in m_Wrapper.m_HorseActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_HorseActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public HorseActions @Horse => new HorseActions(this);
     public interface IGroundActions
     {
         void OnMovement(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
         void OnInterract(InputAction.CallbackContext context);
+    }
+    public interface IHorseActions
+    {
+        void OnMove(InputAction.CallbackContext context);
+        void OnSprint(InputAction.CallbackContext context);
+        void OnJump(InputAction.CallbackContext context);
     }
 }
